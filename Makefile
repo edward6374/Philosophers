@@ -6,7 +6,7 @@
 #    By: vduchi <vduchi@student.42barcelona.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/06/19 16:43:11 by vduchi            #+#    #+#              #
-#    Updated: 2023/06/19 16:43:13 by vduchi           ###   ########.fr        #
+#    Updated: 2023/07/04 21:39:17 by vduchi           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -94,6 +94,7 @@ clean			:
 	@$(RM) $(DEPS_DIR)
 
 fclean			:	clean
+	@$(RM) $(NAME)
 	@$(MAKE) -C libft fclean
 	@echo "$(BLUE)\nPhilosophers cleaned!$(DEF_COLOR)"
 

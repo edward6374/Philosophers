@@ -6,13 +6,13 @@
 /*   By: vduchi <vduchi@student.42barcelona.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/29 12:26:20 by vduchi            #+#    #+#             */
-/*   Updated: 2023/06/29 19:05:19 by vduchi           ###   ########.fr       */
+/*   Updated: 2023/07/04 21:33:16 by vduchi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "test.h"
 
-long	get_current_time(void)
+long	get_current_time()
 {
 	struct timeval	time;
 
@@ -31,14 +31,20 @@ int	print_func(char *str, t_table *table, t_philo *philo)
 		printf("Get time error\n");
 		return (1);
 	}
-	pthread_mutex_lock(table->print_mutex);
+	pthread_mutex_lock(table->print);
+	if (table->is_dead)
+	{
+		pthread_mutex_unlock(table->print);
+		return (0);
+	}
 	if (printf("%.4ld : %d  %s\n", \
-		now - table->timers.t_start, philo->n + 1, str) == -1)
+		now - table->timers.t_start, philo->n, str) == -1)
 	{
 		write(2, "Printf error\n", 13);
 		return (1);
 	}
-	pthread_mutex_unlock(table->print_mutex);
+	usleep(5);
+	pthread_mutex_unlock(table->print);
 	return (0);
 }
 

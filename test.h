@@ -6,7 +6,7 @@
 /*   By: vduchi <vduchi@student.42barcelona.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/29 12:23:52 by vduchi            #+#    #+#             */
-/*   Updated: 2023/06/29 19:05:42 by vduchi           ###   ########.fr       */
+/*   Updated: 2023/07/04 20:34:59 by vduchi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,9 @@
 
 typedef struct	s_time
 {
-	long	t_eat;
-	long	t_sleep;
+	int	t_eat;
+	int	t_die;
+	int	t_sleep;
 	long	t_start;
 }	t_time;
 
@@ -31,8 +32,7 @@ typedef struct	s_philos
 {
 	int				n;
 	int				c_eat;
-	long			tv_eat;
-	long			tv_sleep;
+	long			last_eat;
 	pthread_t		philo;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
@@ -40,14 +40,15 @@ typedef struct	s_philos
 
 typedef struct	s_table
 {
+	int				count;
+	int				max_eat;
+	int				is_dead;
 	int				n_philos;
-	int				count_ph;
-	int				someone_is_dead;
 	t_time			timers;
 	t_philo			*philos;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	*setup;
-	pthread_mutex_t	*print_mutex;
+	pthread_mutex_t	*print;
 }	t_table;
 
 # define EAT "is eating"
