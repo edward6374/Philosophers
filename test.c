@@ -6,7 +6,7 @@
 /*   By: vduchi <vduchi@student.42barcelona.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/26 17:47:23 by vduchi            #+#    #+#             */
-/*   Updated: 2023/07/04 21:38:20 by vduchi           ###   ########.fr       */
+/*   Updated: 2023/07/05 19:41:40 by vduchi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,17 +27,17 @@ t_philo	*philo_init(t_table *table)
 		philo->left_fork = &table->forks[philo->n - 2];
 	philo->right_fork = &table->forks[philo->n - 1];
 	pthread_mutex_unlock(table->print);
+	pthread_mutex_lock(table->setup);
+	pthread_mutex_unlock(table->setup);
 	if (philo->n % 2 == 0)
 		my_sleep(table->timers.t_eat);
 	return (philo);
 }
 
-void	*philo_loop(void *args)
+void	*philo_loop(t_table *table)
 {
-	t_table	*table;
 	t_philo	*philo;
 
-	table = (t_table *)args;
 	pthread_mutex_lock(table->print);
 	philo = philo_init(table);
 	while (!table->is_dead)
@@ -47,19 +47,18 @@ void	*philo_loop(void *args)
 		pthread_mutex_lock(philo->right_fork);
 		print_func(TAKE_FORK, table, philo);
 		print_func(EAT, table, philo);
-		philo->last_eat = get_current_time();
+		pthread_mutex_lock(table->setup);
 		philo->c_eat++;
+		philo->last_eat = get_current_time();
+		pthread_mutex_unlock(table->setup);
 		my_sleep(table->timers.t_eat);
 		pthread_mutex_unlock(philo->left_fork);
 		pthread_mutex_unlock(philo->right_fork);
 		print_func(SLEEP, table, philo);
 		my_sleep(table->timers.t_sleep);
 		print_func(THINK, table, philo);
-//		if (philo->c_eat > 10)
-//		{
-//			table->is_dead = 1;
-//			return (clean_mem(table));
-//		}
+		if (philo->c_eat == table->max_eat)
+			break ;
 	}
 	return (NULL);
 }
@@ -121,6 +120,8 @@ int	check_args(t_table *table, char *argv[], int argc)
 		return (print_help("One of the arguments is not a positive int\n"));
 	if (argc == 6 && atoi_input(argv[5], &table->max_eat))
 		return (print_help("One of the arguments is not a positive int\n"));
+	else if (argc != 6)
+		table->max_eat = -1;
 	return (0);
 }
 
@@ -140,6 +141,8 @@ int	free_malloc(t_table *table, int mode)
 		printf("Mutex init failed\n");
 	else if (mode == 2)
 		printf("Thread creation failed\n");
+	else if (mode == 3)
+		printf("Get time error\n");
 	return (1);
 }
 
@@ -157,13 +160,15 @@ int	table_init(t_table *table)
 		return (free_malloc(table, 0));
 	if (pthread_mutex_init(table->print, NULL) != 0)
 		return (free_malloc(table, 1));
+	if (pthread_mutex_init(table->setup, NULL) != 0)
+		return (free_malloc(table, 1));
 	i = -1;
 	while (++i < table->n_philos)
 		if (pthread_mutex_init(&table->forks[i], NULL) != 0)
 			return (free_malloc(table, 1));
 	return (0);
 }
-
+/*
 void	print_pointers(t_table *table, int i)
 {
 	pthread_mutex_lock(table->print);
@@ -178,7 +183,7 @@ void	print_test(long time, t_table *table)
 	printf("Passed: %ld\tDifference: %ld\n", time, time - table->timers.t_start);
 	pthread_mutex_unlock(table->print);
 }
-
+*/
 int	start_threads(t_table *table)
 {
 	int				i;
@@ -188,13 +193,12 @@ int	start_threads(t_table *table)
 	gettimeofday(&start_time, NULL);
 	pthread_mutex_lock(table->setup);
 	table->timers.t_start = (start_time.tv_sec * 1000) + (start_time.tv_usec / 1000);
-	i = -1;
 	while (++i < table->n_philos)
 		table->philos[i].last_eat = table->timers.t_start;
 	i = -1;
 	while (++i < table->n_philos)
 	{
-		if (pthread_create(&table->philos[i].philo, NULL, &philo_loop, table) != 0)
+		if (pthread_create(&table->philos[i].philo, NULL, (void *)&philo_loop, (void *)table) != 0)
 			return (free_malloc(table, 2));
 		pthread_detach(table->philos[i].philo);
 	}
@@ -206,8 +210,6 @@ void	someone_died(t_table *table, int count)
 {
 	long	now;
 
-//	if (table->is_dead)
-//		return (0);
 	now = get_current_time();
 	if (now == -1)
 	{
@@ -222,28 +224,58 @@ void	someone_died(t_table *table, int count)
 		return ;
 	}
 	table->is_dead = 1;
-	usleep(5);
 	pthread_mutex_unlock(table->print);
+//	usleep(5);
+}
+
+/*
+void	print_custom(t_table *table, char *str, int value)
+{
+	pthread_mutex_lock(table->print);
+	printf("%s%d\n", str, value);
+	pthread_mutex_unlock(table->print);
+}
+*/
+
+int	check_eat(t_table *table, int eat_times)
+{
+	int	i;
+	int	check;
+
+	i = -1;
+	check = 1;
+	pthread_mutex_lock(table->setup);
+	while (++i < table->n_philos - 1)
+	{
+		if (table->philos[i].c_eat != table->philos[i + 1].c_eat)
+			check = 0;
+		if (!check)
+			break ;
+	}
+	if (check == 1 && table->philos[i].c_eat == eat_times)
+		check = 0;
+	pthread_mutex_unlock(table->setup);
+	return (check);
 }
 
 int main(int argc, char *argv[])
 {
-    int 			i = -1;
+//    int 			i = -1;
 	int				count;
+	int				eat_times;
 	t_table			table;
 	long			passed_time;
+	long			started_time;
 
-	if (check_args(&table, argv, argc))
-		return (1);
-	if (table_init(&table))
-		return (1);
-	if (start_threads(&table))
-		return (1);
 	count = 0;
-//	i = -1;
-//	while (++i < table.n_philos)
-//		table.philos[i].last_eat = table.timers.t_start;
-//		print_pointers(&table, i);
+	eat_times = 0;
+	if (check_args(&table, argv, argc) || table_init(&table)
+		|| start_threads(&table))
+		return (1);
+	my_sleep(200);
+	started_time = get_current_time();
+//	if (main_loop(table))
+//		return (free_malloc(&table, 3));
 	while (!table.is_dead)
 	{
 		if (count == table.n_philos)
@@ -254,16 +286,21 @@ int main(int argc, char *argv[])
 			printf("Get time error\n");
 			return (1);
 		}
+		pthread_mutex_lock(table.setup);
+		if (table.max_eat != -1 && check_eat(&table, eat_times))
+			eat_times++;
 		if (passed_time - table.philos[count].last_eat > table.timers.t_die)
 			someone_died(&table, count);
+		pthread_mutex_unlock(table.setup);
 		count++;
 	}
-	my_sleep(200);
-	i = -1;
-	while (++i < table.n_philos)
-		pthread_mutex_destroy(&table.forks[i]);
-	pthread_mutex_destroy(table.print);
-	pthread_mutex_destroy(table.setup);
-	free_malloc(&table, -1);
+//	while (++i < table.n_philos)
+//		pthread_join(table.philos[i].philo, NULL);
+//	i = -1;
+//	while (++i < table.n_philos)
+//		pthread_mutex_destroy(&table.forks[i]);
+//	pthread_mutex_destroy(table.print);
+//	pthread_mutex_destroy(table.setup);
+//	free_malloc(&table, -1);
     return (0);
 }

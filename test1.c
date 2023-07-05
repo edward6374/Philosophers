@@ -6,7 +6,7 @@
 /*   By: vduchi <vduchi@student.42barcelona.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/29 12:26:20 by vduchi            #+#    #+#             */
-/*   Updated: 2023/07/04 21:33:16 by vduchi           ###   ########.fr       */
+/*   Updated: 2023/07/05 19:39:43 by vduchi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,15 @@ int	print_func(char *str, t_table *table, t_philo *philo)
 		return (1);
 	}
 	pthread_mutex_lock(table->print);
+//	pthread_mutex_lock(table->setup);
 	if (table->is_dead)
 	{
 		pthread_mutex_unlock(table->print);
+//		pthread_mutex_unlock(table->setup);
 		return (0);
 	}
-	if (printf("%.4ld : %d  %s\n", \
-		now - table->timers.t_start, philo->n, str) == -1)
+//	pthread_mutex_unlock(table->setup);
+	if (printf("%.4ld : %d  %s\n", now - table->timers.t_start, philo->n, str) == -1)
 	{
 		write(2, "Printf error\n", 13);
 		return (1);
