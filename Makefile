@@ -6,7 +6,7 @@
 #    By: vduchi <vduchi@student.42barcelona.com>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/06/19 16:43:11 by vduchi            #+#    #+#              #
-#    Updated: 2023/07/04 21:41:37 by vduchi           ###   ########.fr        #
+#    Updated: 2023/07/06 20:02:37 by vduchi           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,8 +37,9 @@ DARK_YELLOW		=	\033[38;5;143m
 NAME			=	philo
 
 SRCS			=	srcs/main.c
-SRCS			+=	srcs/atoi.c
-#SRCS			+=	srcs/general/free_funcs.c
+SRCS			+=	srcs/utils.c
+SRCS			+=	srcs/timers.c
+SRCS			+=	srcs/philos.c
 
 OBJS			=	$(patsubst $(SRC_DIR)/%, $(OBJS_DIR)/%, $(SRCS:.c=.o))
 DEPS			=	$(patsubst $(SRC_DIR)/%, $(DEPS_DIR)/%, $(SRCS:.c=.d))
@@ -50,7 +51,7 @@ DEPS_DIR		=	.dep
 
 #=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
 
-CFLAGS			+= 	-Wall -Werror -Wextra -g -O3 $(addprefix -I , $(INC_DIR)) #-fsanitize=address
+CFLAGS			+= 	-Wall -Werror -Wextra -g -O3 $(addprefix -I , $(INC_DIR))
 DFLAGS			=	-MMD -MP -MF $(DEPS_DIR)/$*.d
 
 #=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-#
