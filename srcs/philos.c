@@ -6,26 +6,11 @@
 /*   By: vduchi <vduchi@student.42barcelona.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/06 16:11:35 by vduchi            #+#    #+#             */
-/*   Updated: 2023/07/06 19:52:02 by vduchi           ###   ########.fr       */
+/*   Updated: 2023/07/07 12:27:53 by vduchi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/philo.h"
-
-void	print_pointers(t_table *table, int i)
-{
-	pthread_mutex_lock(table->print);
-	printf("Left fork: %p\tRight fork: %p\tPhilo: %p\tNumber: %i\n", \
-		table->philos[i].left_fork, table->philos[i].right_fork, &table->philos[i], i);
-	pthread_mutex_unlock(table->print);
-}
-
-void	print_custom(t_table *table, char *str)
-{
-	pthread_mutex_lock(table->print);
-	printf("%s", str);
-	pthread_mutex_unlock(table->print);
-}
+#include "philo.h"
 
 int	someone_died(t_table *table, int count)
 {

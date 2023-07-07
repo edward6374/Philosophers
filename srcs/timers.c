@@ -6,11 +6,11 @@
 /*   By: vduchi <vduchi@student.42barcelona.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/06 16:17:14 by vduchi            #+#    #+#             */
-/*   Updated: 2023/07/06 17:33:44 by vduchi           ###   ########.fr       */
+/*   Updated: 2023/07/07 12:28:13 by vduchi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/philo.h"
+#include "philo.h"
 
 long	get_current_time(void)
 {

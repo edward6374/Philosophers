@@ -6,11 +6,11 @@
 /*   By: vduchi <vduchi@student.42barcelona.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/06 16:11:06 by vduchi            #+#    #+#             */
-/*   Updated: 2023/07/06 19:42:47 by vduchi           ###   ########.fr       */
+/*   Updated: 2023/07/07 12:28:05 by vduchi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/philo.h"
+#include "philo.h"
 
 int	free_mutex(t_table *table, int number)
 {

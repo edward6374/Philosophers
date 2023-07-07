@@ -6,11 +6,11 @@
 /*   By: vduchi <vduchi@student.42barcelona.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 14:40:39 by vduchi            #+#    #+#             */
-/*   Updated: 2023/07/06 19:57:27 by vduchi           ###   ########.fr       */
+/*   Updated: 2023/07/07 12:28:18 by vduchi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../inc/philo.h"
+#include "philo.h"
 
 int	check_args(t_table *table, char *argv[], int argc)
 {
@@ -22,9 +22,11 @@ int	check_args(t_table *table, char *argv[], int argc)
 		|| atoi_input(argv[2], &table->timers.t_die)
 		|| atoi_input(argv[3], &table->timers.t_eat)
 		|| atoi_input(argv[4], &table->timers.t_sleep))
-		return (print_help("One of the arguments is not a positive int or is zero\n"));
+		return (print_help("One of the arguments is not a positive int \
+			or is zero\n"));
 	if (argc == 6 && atoi_input(argv[5], &table->max_eat))
-		return (print_help("One of the arguments is not a positive int or is zero\n"));
+		return (print_help("One of the arguments is not a positive int \
+			or is zero\n"));
 	else if (argc != 6)
 		table->max_eat = -1;
 	return (0);

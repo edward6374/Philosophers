@@ -6,7 +6,7 @@
 /*   By: vduchi <vduchi@student.42barcelona.com>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/06/19 14:43:06 by vduchi            #+#    #+#             */
-/*   Updated: 2023/07/06 18:39:12 by vduchi           ###   ########.fr       */
+/*   Updated: 2023/07/07 12:27:34 by vduchi           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,5 @@ int		print_func(char *str, t_table *table, t_philo *philo);
 /* ---		Timers.c		--- */
 void	my_sleep(long wait);
 long	get_current_time(void);
-
-void	print_custom(t_table *table, char *str);
 
 #endif
